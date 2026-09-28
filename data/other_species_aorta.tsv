@@ -1,0 +1,3 @@
+species	site	body_mass_kg	lumen_radius_mm	mean_WSS_Pa	peak_WSS_Pa	source
+mouse	descending aorta (MRI 17.6 T)	0.025	0.62	1.52	6-8	Winter et al. 2019 J Cardiovasc Magn Reson
+rabbit	abdominal aorta (ultrasound image velocimetry)	2.75	1.40	0.54	4.4-5.0	Riemer et al. 2020 Ann Biomed Eng
