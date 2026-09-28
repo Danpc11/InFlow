@@ -1,4 +1,4 @@
-# An Invariant Endothelial Flow Signal Across Species — code, version 1
+# An Invariant Endothelial Flow Signal Across Species
 
 Source code and data tables to reproduce every number and figure of the manuscript.
 
