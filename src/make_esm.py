@@ -26,10 +26,10 @@ ax.loglog(al, G_tube(al), color=BLUE, label="exact solution, rigid tube")
 ax.loglog(al, np.ones_like(al), ":", color=GREY, label="quasi-steady limit (G = 1)")
 ax.loglog(al[al > 5], al[al > 5] / (2 * np.sqrt(2)) * (G_tube(np.array([40.0]))[0] / (40 / (2 * np.sqrt(2)))), "--", color=RED, lw=0.8,
           label="linear growth at large \u03b1")
-for x, lab in ((0.9, "small artery\n0.5 mm"), (4.6, "carotid"), (15.0, "aorta")):
-    ax.axvline(x, color=GREY, lw=0.4, ls="--"); ax.text(x * 1.05, 6, lab, fontsize=5.8, color=GREY)
-ax.set(xlabel="Womersley number \u03b1", ylabel="G(\u03b1) = oscillatory / quasi-steady wall shear", ylim=(0.8, 12))
-ax.legend(loc="upper left")
+for x, y, lab in ((0.9, 1.08, "0.5 mm artery"), (4.6, 1.75, "carotid"), (15.0, 1.08, "aorta")):
+    ax.axvline(x, color=GREY, lw=0.4, ls="--", zorder=0); ax.text(x * 1.06, y, lab, fontsize=5.6, color=GREY, rotation=90, va="bottom")
+ax.set(xlabel="Womersley number \u03b1", ylabel="G(\u03b1)", ylim=(0.8, 12))
+ax.legend(loc="upper left", fontsize=6, frameon=True, facecolor="white", edgecolor="none", framealpha=1)
 fig.savefig(os.path.join(FIG, "esm_figS1.png"), bbox_inches="tight"); fig.savefig(os.path.join(FIG, "esm_figS1.pdf"), bbox_inches="tight")
 
 # Figure S2: variation of sensed shear across four human arteries versus w
@@ -42,10 +42,10 @@ AW = pd.read_csv(os.path.join(a.out, "amplitude_weight_summary.tsv"), sep="\t")
 fig, ax = plt.subplots(figsize=(3.35, 2.6))
 ax.plot(ws, cvy, color=BLUE, label="young adults")
 ax.plot(ws, cvo, "--", color=RED, label="older adults")
-ax.axvspan(0.32, 0.43, color=GREEN, alpha=0.15, lw=0); ax.text(0.33, 50, "in vitro,\nconverted", fontsize=5.8, color=GREEN)
-ax.axvline(0.4, color="k", lw=0.5); ax.text(0.41, 30, "w = 0.4\n(main text)", fontsize=5.8)
+ax.axvspan(0.32, 0.43, color=GREEN, alpha=0.15, lw=0); ax.text(0.46, 56, "in vitro weight, converted", fontsize=5.8, color=GREEN, va="top")
+ax.axvline(0.4, color="k", lw=0.5); ax.text(0.46, 49, "w = 0.4, used in the main text", fontsize=5.8, va="top")
 ax.set(xlabel="Weight of the pulsatile component, w", ylabel="Variation across four arteries (CV, %)", ylim=(0, 60))
-ax.legend(loc="upper right")
+ax.legend(loc="center right")
 fig.savefig(os.path.join(FIG, "esm_figS2.png"), bbox_inches="tight"); fig.savefig(os.path.join(FIG, "esm_figS2.pdf"), bbox_inches="tight")
 
 
