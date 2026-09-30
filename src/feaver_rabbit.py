@@ -59,7 +59,8 @@ out = []
 for b in (0.70, 0.75):
     g = np.log2(SA.Q_H / QC); L = SA.L0_H * 2 ** (-g / 3)
     tau0 = 4 * SA.MU * QC / (np.pi * RC ** 3) * sf(RC, 70, PHI) / (RC ** (b - 1) * L ** ((b - 1) / 2))
-    for sp, M, r in (("rabbit", 2.75, 1.4e-3), ("mouse", 0.025, np.sqrt(1.2e-6 / np.pi))):
+    OS = pd.read_csv(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "other_species_aorta.tsv"), sep="\t")
+    for sp, M, r in zip(OS.species, OS.body_mass_kg, OS.lumen_radius_mm / 1000):
         t = SA.tree(M, b, PHI, 0, tau0, g_step=0.25)
         Lr = np.exp(np.interp(np.log(r), np.log(t.r.values[::-1]), np.log(t.L.values[::-1])))
         Q = np.exp(np.interp(np.log(r), np.log(t.r.values[::-1]), np.log(t.Q.values[::-1])))
