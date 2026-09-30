@@ -1,4 +1,4 @@
-# InFlow: An Invariant Endothelial Flow Signal Across Species
+# An Invariant Endothelial Flow Signal Across Species (InFlow)
 
 Code and data to reproduce every number, figure and supplementary table of the manuscript *An invariant endothelial flow signal across species* (submitted to Journal of the Royal Society Interface). Version 1.
 
