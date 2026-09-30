@@ -1,3 +1,5 @@
+"""Shared helpers: exact Womersley ratio G(alpha) of oscillatory to quasi-steady wall shear in a rigid tube, and the
+Womersley number alpha = r sqrt(omega rho / mu) with omega = 2 pi HR / 60."""
 import numpy as np
 from scipy.special import jv
 import systemic_allometry as SA
