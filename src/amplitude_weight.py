@@ -65,8 +65,8 @@ b_best = bg[int(np.argmin(rb))]
 print(f"best b at w = {w_eq:.2f}: {b_best} (rms {min(rb):.3f})")
 
 # Reneman Table 3: invariance of S = mean + w (peak - mean) across four human beds
-T3 = pd.DataFrame([("CCA", 1.3, 3.8, 1.2, 2.6), ("CFA", 0.4, 4.0, 0.3, 3.8), ("SFA", 0.5, 3.4, 0.5, 4.0), ("BA", 0.5, 3.6, 0.5, 3.3)],
-                  columns=["bed", "mean_y", "peak_y", "mean_o", "peak_o"])
+T3r = pd.read_csv(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "reneman2009_table3_human_beds.tsv"), sep="\t")
+T3 = pd.DataFrame(dict(bed=T3r.artery, mean_y=T3r.mean_WSS_young_Pa, peak_y=T3r.peak_WSS_young_Pa, mean_o=T3r.mean_WSS_old_Pa, peak_o=T3r.peak_WSS_old_Pa))
 ws = np.linspace(0, 1.2, 25); cvy = []; cvo = []
 for w in ws:
     Sy = T3.mean_y + w * (T3.peak_y - T3.mean_y); So = T3.mean_o + w * (T3.peak_o - T3.mean_o)
