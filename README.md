@@ -26,6 +26,7 @@ About 25 minutes on one core. Results are written to `results/` and figures to `
 |---|---|---|
 | `python3 src/canonical_results.py --out results` | `canonical_results.tsv` | b and its 95% CI, variance removed by Σ, carotid/femoral ratio, coronary exponent, mouse and rabbit ratios |
 | `python3 src/metabolic_curvature.py --out results` | `metabolic_curvature_b.tsv` | b under Kleiber, Rubner and curved metabolic laws; small vs large mammals |
+| `python3 src/species_boot.py --out results` | `species_boot.tsv` | 95% CI of b by bootstrap over studies (51) and species (9) |
 | `python3 src/amplitude_weight.py --out results` | `amplitude_weight_summary.tsv`, `amplitude_weight_scan.tsv` | weight w of the pulsatile component |
 | `python3 src/feaver_rabbit.py --out results` | `feaver_sensing_laws.tsv`, `rabbit_mouse_check.tsv` | in vitro sensing laws (Fig. 3); rabbit and mouse aorta |
 | `python3 src/carotid_harmonics.py --out results` | `carotid_harmonics.tsv` | young vs older carotid waveforms (Fig. 4A–C) |
@@ -58,6 +59,7 @@ Key values produced by `./run_all.sh` (bootstrap seeds are fixed, so results are
 | Carotid-to-femoral mean shear ratio | `canonical_results.tsv` | 2.8 (w = 0.4), 3.7 (w = 1) |
 | Coronary flow–diameter exponent | `canonical_results.tsv` | 2.51 |
 | b under Rubner and curved metabolic laws | `metabolic_curvature_b.tsv` | 0.675 |
+| 95% CI of b, bootstrap over species | `species_boot.tsv` | 0.625–0.725 |
 | Pulsatile weight w | `amplitude_weight_summary.tsv` | 0.32–0.43 (in vitro, converted); 1.05 / 0.40 (young / older adults) |
 | NF-κB fit, mean + w₁A₁ | `feaver_sensing_laws.tsv` | R² 0.878 (w₁ = 2.9) |
 | Internal carotid first harmonic, young / older | `carotid_harmonics.tsv` | 0.25 / 0.43 of mean flow |
