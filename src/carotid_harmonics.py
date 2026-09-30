@@ -6,11 +6,12 @@ analysed. Wall shear harmonics follow from Womersley: the k-th harmonic of wall 
 is G(alpha sqrt k). Outputs: flow and wall-shear first harmonic, peak excursion, the ratio A1/(peak - mean) that converts
 the in vitro weight (Feaver: S = A0 + 2.87 A1) to a weight on the peak excursion, and the predicted age effect.
 Radii: ICA 2.3 mm, VA 1.7 mm, CCA 3.3 mm, ECA 2.0 mm (typical adult values; assumption)."""
-import os, sys
+import argparse, os, sys
 import numpy as np, pandas as pd
 from scipy.interpolate import CubicSpline
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from sigma_exact_lib import G_tube
+ap = argparse.ArgumentParser(); ap.add_argument("--out", default="results"); a = ap.parse_args()
 MU, RHO = 4e-3, 1060.0
 R = {"ICA": 2.3e-3, "VA": 1.7e-3, "CCA": 3.3e-3, "ECA": 2.0e-3}
 D = pd.read_csv(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "carotid_waveforms_feature_points.tsv"), sep="\t")
@@ -30,7 +31,7 @@ for (src, v, grp), d in D.groupby(["source", "vessel", "group"], sort=False):
                      wss_A1=round(A[1] * Gk[1], 3), wss_peak_minus_mean=round(tau.max() - 1, 3),
                      c_flow=round(A[1] / (q.max() - 1), 3), c_wss=round(A[1] * Gk[1] / (tau.max() - 1), 3),
                      sensed_factor_feaver=round(1 + 2.87 * A[1] * Gk[1], 3)))
-T = pd.DataFrame(rows); T.to_csv(os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "results", "carotid_harmonics.tsv"), sep="\t", index=False)
+T = pd.DataFrame(rows); os.makedirs(a.out, exist_ok=True); T.to_csv(os.path.join(a.out, "carotid_harmonics.tsv"), sep="\t", index=False)
 pd.set_option("display.width", 250); print(T.to_string(index=False))
 y_ = T[(T.vessel == "ICA") & (T.group == "young")].iloc[0]; o_ = T[(T.vessel == "ICA") & (T.group == "older")].iloc[0]
 ratio = y_.sensed_factor_feaver / o_.sensed_factor_feaver
