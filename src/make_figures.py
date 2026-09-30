@@ -1,8 +1,8 @@
 #!/usr/bin/env python3
-"""Main figures for the PNAS draft "An Invariant Endothelial Flow Signal Across Species".
+"""Main figures of "An invariant endothelial flow signal across species" (Figures 1-4).
 Canonical model: exact Womersley tube factor, linear sensing S = tau_mean (1 + w phi G), w = 0.4, phi 1.32 (low-resistance
 beds) / 5.56 (limb beds), target constant fixed on the human common carotid, b profiled (best 0.675).
-Outputs: results/figures/pnas_fig1..4.png and .pdf
+Outputs: results/figures/rsif_fig1..4 (.png 300 dpi, .pdf vector, .tif 600 dpi). Run the analysis scripts first.
 """
 import os, sys
 import numpy as np, pandas as pd
@@ -69,11 +69,11 @@ ls_best, lq_pred = sigma_and_pred(B, W)
 ls_murray, lq_murray = sigma_and_pred(1.0, 0.0)
 cols = D.species.map(lambda s: SPC.get(s, s))
 masses = D.groupby("species").M.median().sort_values()
-cmap = plt.cm.Blues
-col_of = {sp: cmap(0.95 - 0.65 * i / (len(masses) - 1)) for i, sp in enumerate(masses.index)}
+SPECIES_COLORS = ["#1B3A8A", "#3A7BD5", "#4FB3D9", "#1A9E77", "#7CB342", "#E6AB02", "#E6550D", "#C0392B", "#8E44AD"]
+col_of = {sp: SPECIES_COLORS[i] for i, sp in enumerate(masses.index)}   # ordered by body mass, mouse -> cow
 
 # ---------------- Figure 1
-fig = plt.figure(figsize=(7.0, 5.2))
+fig = plt.figure(figsize=(6.85, 5.1))
 gs = fig.add_gridspec(2, 2, hspace=0.45, wspace=0.32)
 ax = fig.add_subplot(gs[0, 0])
 for art, mk, lab in (("abdominal aorta", "o", "abdominal aorta"), ("common carotid", "s", "common carotid")):
@@ -81,7 +81,9 @@ for art, mk, lab in (("abdominal aorta", "o", "abdominal aorta"), ("common carot
     ax.scatter(d.M, d.tau.astype(float) / 10, marker=mk, s=16, c=[col_of[s] for s in d.species], edgecolor="k", lw=0.3, label=lab)
 ax.set(xscale="log", yscale="log", xlabel="Body mass (kg)", ylabel="Mean wall shear stress (Pa)")
 ax.set_title("A  The same artery, twentyfold apart", loc="left", fontweight="bold")
-ax.legend(loc="upper right")
+from matplotlib.lines import Line2D
+ax.legend(handles=[Line2D([], [], marker="o", ls="", mfc="0.75", mec="k", mew=0.3, label="abdominal aorta"),
+                   Line2D([], [], marker="s", ls="", mfc="0.75", mec="k", mew=0.3, label="common carotid")], loc="upper right")
 ax = fig.add_subplot(gs[0, 1]); ax.axis("off")
 ax.set_title("B  One target, sensed through the pulse", loc="left", fontweight="bold")
 boxes = [(0.00, 0.60, "Target scales with size\n\u03c4* \u221d r$^{b-1}$ \u2113$^{(b-1)/2}$", C["blue"]),
@@ -115,11 +117,11 @@ ax.text(0.98, 0.35, "cross-species data fix b;\npulse is required by\nFigs. 2C\u
 ax.set_title("D  The data fix b near 2/3", loc="left", fontweight="bold")
 ax.legend(loc="upper left", fontsize=6); ax.text(0.56, 0.55, "95% CI\n(by study)", transform=ax.get_xaxis_transform(), color=C["blue"], fontsize=5.8)
 ax.text(2/3, 0.02, "2/3", transform=ax.get_xaxis_transform(), fontsize=5.8); ax.text(0.755, 0.02, "3/4", transform=ax.get_xaxis_transform(), fontsize=5.8)
-fig.savefig(os.path.join(OUT, "pnas_fig1.png"), bbox_inches="tight"); fig.savefig(os.path.join(OUT, "pnas_fig1.pdf"), bbox_inches="tight")
+fig.savefig(os.path.join(OUT, "rsif_fig1.png"), bbox_inches="tight", dpi=300); fig.savefig(os.path.join(OUT, "rsif_fig1.tif"), bbox_inches="tight", dpi=600, pil_kwargs={"compression": "tiff_lzw"}); fig.savefig(os.path.join(OUT, "rsif_fig1.pdf"), bbox_inches="tight")
 print("fig1", flush=True)
 
 # ---------------- Figure 2
-fig, axs = plt.subplots(2, 2, figsize=(7.0, 5.2)); plt.subplots_adjust(hspace=0.45, wspace=0.32)
+fig, axs = plt.subplots(2, 2, figsize=(6.85, 5.1)); plt.subplots_adjust(hspace=0.45, wspace=0.32)
 ax = axs[0, 0]
 for sp in masses.index:
     m = (D.species == sp).values
@@ -141,15 +143,16 @@ ax.text(0.03, 0.9, f"variance removed: {100 * (1 - ls_best.var() / np.log10(tau)
 ax.legend(ncol=3, loc="lower right", fontsize=5.6, handletextpad=0.1, columnspacing=0.4)
 ax = axs[1, 0]
 beds = ["CCA", "CFA", "SFA", "BA"]
-mean_y = [1.3, 0.4, 0.5, 0.5]; peak_y = [3.8, 4.0, 3.4, 3.6]; mean_o = [1.2, 0.3, 0.5, 0.5]; peak_o = [2.6, 3.8, 4.0, 3.3]
+T3r = pd.read_csv(os.path.join(ROOT, "data", "reneman2009_table3_human_beds.tsv"), sep="\t")
+mean_y, peak_y = T3r.mean_WSS_young_Pa.tolist(), T3r.peak_WSS_young_Pa.tolist(); mean_o, peak_o = T3r.mean_WSS_old_Pa.tolist(), T3r.peak_WSS_old_Pa.tolist()
 x = np.arange(4)
-ax.bar(x - 0.2, mean_y, 0.38, color=C["grey"], label="mean"); ax.bar(x + 0.2, peak_y, 0.38, color=C["orange"], label="including the pulse (peak)")
+ax.bar(x - 0.2, mean_y, 0.38, color=C["grey"], label="mean"); ax.bar(x + 0.2, peak_y, 0.38, color=C["orange"], label="peak (includes the pulse)")
 cv = lambda v: 100 * np.std(v) / np.mean(v)
 ax.set_xticks(x); ax.set_xticklabels(["carotid", "common\nfemoral", "superficial\nfemoral", "brachial"])
-ax.set(ylabel="Wall shear stress, young adults (Pa)", ylim=(0, 5.2))
-ax.text(0.02, 0.93, f"variation across arteries: mean {cv(mean_y):.0f}%, with pulse {cv(peak_y):.0f}% (older: {cv(peak_o):.0f}%)",
-        transform=ax.transAxes, fontsize=6)
-ax.set_title("C  Human arteries share one signal", loc="left", fontweight="bold"); ax.legend(loc="upper left", bbox_to_anchor=(0.0, 0.88))
+ax.set(ylabel="Wall shear stress, young adults (Pa)", ylim=(0, 7.0))
+ax.text(0.02, 0.77, f"variation across arteries: mean {cv(mean_y):.0f}%,\nwith pulse {cv(peak_y):.0f}% (older adults {cv(peak_o):.0f}%)",
+        transform=ax.transAxes, fontsize=6, ha="left", va="top")
+ax.set_title("C  Human arteries share one signal", loc="left", fontweight="bold"); ax.legend(loc="upper left", bbox_to_anchor=(0.0, 1.0))
 ax = axs[1, 1]
 ws = np.linspace(0, 1.2, 61); w70 = 2 * np.pi * 70 / 60
 Sf = lambda r, phi, w: 1 + w * phi * (np.sqrt(1) * 0 + G_tube(alpha_of(r, 70))[0])
@@ -159,7 +162,7 @@ ax.plot(ws, ratio, color=C["blue"], label="predicted, one target")
 ax.axvspan(0.32, 0.43, color=C["orange"], alpha=0.2, lw=0); ax.text(0.33, 0.6, "in vitro\nweight", fontsize=6, color=C["orange"])
 ax.set(xlabel="Weight of the pulsatile component, w", ylabel="Carotid / femoral mean shear", ylim=(0, 5.5))
 ax.set_title("D  Pulsatility sets the bed ratio", loc="left", fontweight="bold"); ax.legend(loc="upper left")
-fig.savefig(os.path.join(OUT, "pnas_fig2.png"), bbox_inches="tight"); fig.savefig(os.path.join(OUT, "pnas_fig2.pdf"), bbox_inches="tight")
+fig.savefig(os.path.join(OUT, "rsif_fig2.png"), bbox_inches="tight", dpi=300); fig.savefig(os.path.join(OUT, "rsif_fig2.tif"), bbox_inches="tight", dpi=600, pil_kwargs={"compression": "tiff_lzw"}); fig.savefig(os.path.join(OUT, "rsif_fig2.pdf"), bbox_inches="tight")
 print("fig2", flush=True)
 
 # ---------------- Figure 3
@@ -168,7 +171,7 @@ y = F.NFkB_obs.values; A0, A1 = F.A0.values, F.A1.values
 res = lambda p, S: p[1] + (p[0] - p[1]) * np.exp(-S / abs(p[2])) - y
 fit = least_squares(lambda p: res(p[:3], A0 + abs(p[3]) * A1), [3.8, 1.3, 3.0, 2.0])
 p = fit.x; S = A0 + abs(p[3]) * A1
-fig, axs = plt.subplots(1, 3, figsize=(7.4, 2.5)); plt.subplots_adjust(wspace=0.7)
+fig, axs = plt.subplots(1, 3, figsize=(6.85, 2.4)); plt.subplots_adjust(wspace=0.7)
 ax = axs[0]
 sc = ax.scatter(A0, A1, c=y, cmap="Reds", s=28, edgecolor="k", lw=0.3)
 cb = fig.colorbar(sc, ax=ax, fraction=0.06, pad=0.04); cb.set_label("NF-\u03baB (fold)", fontsize=6.5); cb.ax.tick_params(labelsize=6)
@@ -190,13 +193,13 @@ T = T.set_index("law").loc[order]
 ax.bar(range(len(T)), T.R2, color=[C["grey"], C["grey"], C["sky"], C["blue"], "0.3"])
 ax.set_xticks(range(len(T))); ax.set_xticklabels([labs[k] for k in T.index], rotation=35, ha="right")
 ax.set(ylabel="R$^2$", ylim=(0, 1)); ax.set_title("C  Sensing laws", loc="left", fontweight="bold")
-fig.savefig(os.path.join(OUT, "pnas_fig3.png"), bbox_inches="tight"); fig.savefig(os.path.join(OUT, "pnas_fig3.pdf"), bbox_inches="tight")
+fig.savefig(os.path.join(OUT, "rsif_fig3.png"), bbox_inches="tight", dpi=300); fig.savefig(os.path.join(OUT, "rsif_fig3.tif"), bbox_inches="tight", dpi=600, pil_kwargs={"compression": "tiff_lzw"}); fig.savefig(os.path.join(OUT, "rsif_fig3.pdf"), bbox_inches="tight")
 print("fig3", flush=True)
 
 # ---------------- Figure 4
 WV = pd.read_csv(os.path.join(ROOT, "data", "carotid_waveforms_feature_points.tsv"), sep="\t")
 H = pd.read_csv(os.path.join(ROOT, "results", "carotid_harmonics.tsv"), sep="\t")
-fig = plt.figure(figsize=(7.4, 5.0)); gs = fig.add_gridspec(2, 3, hspace=0.6, wspace=0.55)
+fig = plt.figure(figsize=(6.85, 4.8)); gs = fig.add_gridspec(2, 3, hspace=0.6, wspace=0.55)
 ax = fig.add_subplot(gs[0, 0:2])
 spec = {}
 for (grp, lab, c) in (("young", "young adults (Ford 2005)", C["blue"]), ("older", "older adults (Hoi 2010)", C["red"])):
@@ -223,7 +226,8 @@ ax.text(0, 100 * (ratio_wss - 1) - 2.5, f"{100 * (ratio_wss - 1):.0f}%", ha="cen
 ax.axhline(0, color="k", lw=0.5); ax.set_xticks([0, 1]); ax.set_xticklabels(["mean shear", "lumen radius"])
 ax.set(ylabel="Older vs young, predicted (%)", ylim=(-27, 12)); ax.set_title("C  Older pulse, same target", loc="left", fontweight="bold")
 ax = fig.add_subplot(gs[1, 1])
-hr_eff = {"aorta": 4.0, "carotid": 1.8, "femoral": 1.3, "0.5 mm": 0.0}
+HRt = pd.read_csv(os.path.join(ROOT, "results", "hr_prediction.tsv"), sep="\t")
+hr_eff = dict(zip(["aorta", "carotid", "femoral", "0.5 mm"], HRt.radius_change_pct_plus20bpm.tolist()))
 ax.bar(range(4), list(hr_eff.values()), color=[C["purple"], C["purple"], C["purple"], C["grey"]])
 ax.set_xticks(range(4)); ax.set_xticklabels(list(hr_eff.keys()), rotation=30, ha="right")
 ax.set(ylabel="Radius change (%)\n+20 bpm, fixed flow"); ax.set_title("D  Heart rate by size", loc="left", fontweight="bold")
@@ -235,5 +239,5 @@ for (lab, f), c in zip(laws.items(), (C["blue"], C["green"], C["orange"])):
     ax.plot(Aa, 1 / f, color=c, label=lab)
 ax.set(xlabel="Oscillatory / mean shear", ylabel="Apparent target\n(mean shear, vs steady)", ylim=(0, 1.1))
 ax.legend(fontsize=5.5, loc="lower left"); ax.set_title("E  In vitro test", loc="left", fontweight="bold")
-fig.savefig(os.path.join(OUT, "pnas_fig4.png"), bbox_inches="tight"); fig.savefig(os.path.join(OUT, "pnas_fig4.pdf"), bbox_inches="tight")
+fig.savefig(os.path.join(OUT, "rsif_fig4.png"), bbox_inches="tight", dpi=300); fig.savefig(os.path.join(OUT, "rsif_fig4.tif"), bbox_inches="tight", dpi=600, pil_kwargs={"compression": "tiff_lzw"}); fig.savefig(os.path.join(OUT, "rsif_fig4.pdf"), bbox_inches="tight")
 print("fig4 done", flush=True)
