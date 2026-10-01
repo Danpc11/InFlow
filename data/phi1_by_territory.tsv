@@ -1,0 +1,4 @@
+territory	phi1	status	source	note
+low_resistance	0.274	measured	Ford 2005: mean of ICA and VA first harmonics, young adults (0.253, 0.295)	used for tree construction, calibration (human CCA) and low-resistance measurements
+low_resistance_older	0.577	measured	Hoi 2010: CCA first harmonic, older adults	sensitivity check only
+limb	1.596	PROVISIONAL	Reneman 2009 table 3 peak excursion (CFA 9.0, brachial 6.2) x median carotid c_wss 0.287 / |T(alpha)|	replace with first harmonic of a published femoral/brachial flow waveform (data still to collect)
